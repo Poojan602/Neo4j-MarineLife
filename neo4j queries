@@ -1,0 +1,18 @@
+--------------Load CSV, Create nodes and relationship between marine animal and Feeding habitats ----------------
+
+LOAD CSV WITH HEADERS FROM 'file:///Users/patelpoojan/Desktop/grp_project/Marine_Life.csv' AS row FIELDTERMINATOR ',' MERGE (m:Marine_Animal{Name:row['Name'],Conservation_Status:row['Conservation_Status'],Habitats:row['Habitat/Ecosystem']}) MERGE (n:Marine_Feeding_Habits{Feeding_Habits:row['Feeding_Habits']}) MERGE (m)-[r:Identical_Feeding_Habits]->(n)
+
+-----------------------Create relationship between animals
+MATCH (A:Marine_Animal),(B:Marine_Animal)
+WHERE A.Habitats = B.Habitats
+MERGE (A)-[r:Neighbour]->(B)
+
+-----------------------delete self relationship
+MATCH (a:Marine_Animal)-[rel:Neighbour]->(a)
+DELETE rel;
+
+-----------------------Final Output
+MATCH (a:Marine_Animal)
+WHERE a.Conservation_Status CONTAINS 'Endangered'
+RETURN a;
+
